@@ -33,31 +33,138 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// GET ALL POSTS
+// // GET ALL POSTS V1
+// router.get('/', authMiddleware, async (req, res) => {
+//   const { pageNumber } = req.query;
+//   const number = Number(pageNumber);
+//   const size = 8;
+//   try {
+//     let posts;
+//     if (number === 1) {
+//       posts = await PostModel.find()
+//         .limit(size)
+//         .sort({ createdAt: -1 })
+//         .populate('user')
+//         .populate('comments.user');
+//     }
+//     //
+//     else {
+//       const skips = size * (number - 1);
+//       posts = await PostModel.find()
+//         .skip(skips)
+//         .limit(size)
+//         .sort({ createdAt: -1 })
+//         .populate('user')
+//         .populate('comments.user');
+//     }
+//     if (posts.length === 0) {
+//       return res.json([]);
+//     }
+//     let postsToBeSent = [];
+//     const { userId } = req;
+//     const loggedUser = await FollowerModel.findOne({ user: userId });
+//     if (loggedUser.following.length === 0) {
+//       postsToBeSent = posts.filter(
+//         (post) => post.user._id.toString() === userId
+//       );
+//     }
+//     //
+//     else {
+//       for (let i = 0; i < loggedUser.following.length; i++) {
+//         const foundPostsFromFollowing = posts.filter(
+//           (post) =>
+//             post.user._id.toString() === loggedUser.following[i].user.toString()
+//         );
+//         if (foundPostsFromFollowing.length > 0)
+//           postsToBeSent.push(...foundPostsFromFollowing);
+//       }
 
+//       const foundOwnPosts = posts.filter(
+//         (post) => post.user._id.toString() === userId
+//       );
+//       if (foundOwnPosts.length > 0) postsToBeSent.push(...foundOwnPosts);
+//     }
+//     postsToBeSent.length > 0 &&
+//       postsToBeSent.sort((a, b) => [
+//         new Date(b.createdAt) - new Date(a.createdAt),
+//       ]);
+//     return res.json(postsToBeSent);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).send(`Server error`);
+//   }
+// });
+
+// GET ALL POSTS API ROUTE V2
 router.get('/', authMiddleware, async (req, res) => {
   const { pageNumber } = req.query;
-  const number = Number(pageNumber);
-  const size = 8;
+
   try {
-    let posts;
+    const number = Number(pageNumber);
+    const size = 8;
+    const { userId } = req;
+
+    const loggedUser = await FollowerModel.findOne({ user: userId }).select(
+      '-followers'
+    );
+
+    let posts = [];
+
     if (number === 1) {
-      posts = await PostModel.find()
-        .limit(size)
-        .sort({ createdAt: -1 })
-        .populate('user')
-        .populate('comments.user');
+      if (loggedUser.following.length > 0) {
+        posts = await PostModel.find({
+          user: {
+            $in: [
+              userId,
+              ...loggedUser.following.map((following) => following.user),
+            ],
+          },
+        })
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate('user')
+          .populate('comments.user');
+      }
+      //
+      else {
+        posts = await PostModel.find({ user: userId })
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate('user')
+          .populate('comments.user');
+      }
     }
+
     //
     else {
       const skips = size * (number - 1);
-      posts = await PostModel.find()
-        .skip(skips)
-        .limit(size)
-        .sort({ createdAt: -1 })
-        .populate('user')
-        .populate('comments.user');
+
+      if (loggedUser.following.length > 0) {
+        posts = await PostModel.find({
+          user: {
+            $in: [
+              userId,
+              ...loggedUser.following.map((following) => following.user),
+            ],
+          },
+        })
+          .skip(skips)
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate('user')
+          .populate('comments.user');
+      }
+      //
+      else {
+        posts = await PostModel.find({ user: userId })
+          .skip(skips)
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate('user')
+          .populate('comments.user');
+      }
     }
+
     return res.json(posts);
   } catch (error) {
     console.error(error);

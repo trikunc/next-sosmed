@@ -14,7 +14,7 @@ import 'semantic-ui-css/semantic.min.css';
 //     console.log('token: ', token);
 //     let pageProps = {};
 
-//     const protectedRoutes = ctx.pathname === '/';
+//     const protectedRoutes = ctx.pathname === '/' || ctx.pathname === "/[username]";;
 //     console.log('protectedRoutes:', protectedRoutes);
 
 //     if (!token) {
@@ -70,7 +70,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   const { token } = parseCookies(ctx);
   let pageProps = {};
 
-  const protectedRoutes = ctx.pathname === '/';
+  const protectedRoutes =
+    ctx.pathname === '/' || ctx.pathname === '/[username]';
 
   if (!token) {
     protectedRoutes && redirectUser(ctx, '/login');
