@@ -71,7 +71,10 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   let pageProps = {};
 
   const protectedRoutes =
-    ctx.pathname === '/' || ctx.pathname === '/[username]';
+    ctx.pathname === '/' ||
+    ctx.pathname === '/[username]' ||
+    ctx.pathname === '/notifications' ||
+    ctx.pathname === '/post/[postId]';
 
   if (!token) {
     protectedRoutes && redirectUser(ctx, '/login');

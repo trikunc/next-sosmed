@@ -5,6 +5,12 @@ const PostModel = require('../models/PostModel');
 const FollowerModel = require('../models/FollowerModel');
 const authMiddleware = require('../middleware/authMiddleware');
 const uuid = require('uuid').v4;
+const {
+  newLikeNotification,
+  removeLikeNotification,
+  newCommentNotification,
+  removeCommentNotification,
+} = require('../utilsServer/notificationActions');
 
 // CREATE A POST
 
@@ -242,6 +248,10 @@ router.post('/like/:postId', authMiddleware, async (req, res) => {
     await post.likes.unshift({ user: userId });
     await post.save();
 
+    if (post.user.toString() !== userId) {
+      await newLikeNotification(userId, postId, post.user.toString());
+    }
+
     return res.status(200).send('Post liked');
   } catch (error) {
     console.error(error);
@@ -276,6 +286,10 @@ router.put('/unlike/:postId', authMiddleware, async (req, res) => {
 
     await post.save();
 
+    if (post.user.toString() !== userId) {
+      await removeLikeNotification(userId, postId, post.user.toString());
+    }
+
     return res.status(200).send('Post Unliked');
   } catch (error) {
     console.error(error);
@@ -306,7 +320,7 @@ router.get('/like/:postId', authMiddleware, async (req, res) => {
 router.post('/comment/:postId', authMiddleware, async (req, res) => {
   try {
     const { postId } = req.params;
-
+    const { userId } = req;
     const { text } = req.body;
 
     if (text.length < 1)
@@ -325,6 +339,16 @@ router.post('/comment/:postId', authMiddleware, async (req, res) => {
 
     await post.comments.unshift(newComment);
     await post.save();
+
+    if (post.user.toString() !== userId) {
+      await newCommentNotification(
+        postId,
+        newComment._id,
+        userId,
+        post.user.toString(),
+        text
+      );
+    }
 
     return res.status(200).json(newComment._id);
   } catch (error) {
@@ -358,6 +382,15 @@ router.delete('/:postId/:commentId', authMiddleware, async (req, res) => {
       await post.comments.splice(indexOf, 1);
 
       await post.save();
+
+      if (post.user.toString() !== userId) {
+        await removeCommentNotification(
+          postId,
+          commentId,
+          userId,
+          post.user.toString()
+        );
+      }
 
       return res.status(200).send('Deleted Successfully');
     };
