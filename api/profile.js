@@ -198,7 +198,8 @@ router.post('/update', authMiddleware, async (req, res) => {
       req.body;
 
     let profileFields = {};
-    profileFields.user = user._id;
+    // profileFields.user = user._id;
+    profileFields.user = userId;
 
     profileFields.bio = bio;
 

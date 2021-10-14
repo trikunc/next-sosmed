@@ -35,6 +35,9 @@ function ProfilePage({
 
   const [loggedUserFollowStats, setUserFollowStats] = useState(userFollowStats);
 
+  // console.log('Profile:', profile.user);
+  // console.log('User:', user);
+
   const ownAccount = profile.user._id === user._id;
 
   useEffect(() => {
@@ -142,24 +145,7 @@ function ProfilePage({
   );
 }
 
-// export async function getServerSideProps(ctx) {
-//   try {
-//     const { username } = ctx.query;
-//     const { token } = parseCookies(ctx);
-
-//     const res = await axios.get(`${baseUrl}/api/profile/${username}`, {
-//       headers: { Authorization: token },
-//     });
-
-//     const { profile, followersLength, followingLength } = res.data;
-
-//     return { props: { profile, followersLength, followingLength } };
-//   } catch (error) {
-//     return { props: { errorLoading: true } };
-//   }
-// }
-
-ProfilePage.getInitialProps = async (ctx) => {
+export async function getServerSideProps(ctx) {
   try {
     const { username } = ctx.query;
     const { token } = parseCookies(ctx);
@@ -170,10 +156,27 @@ ProfilePage.getInitialProps = async (ctx) => {
 
     const { profile, followersLength, followingLength } = res.data;
 
-    return { profile, followersLength, followingLength };
+    return { props: { profile, followersLength, followingLength } };
   } catch (error) {
-    return { errorLoading: true };
+    return { props: { errorLoading: true } };
   }
-};
+}
+
+// ProfilePage.getInitialProps = async (ctx) => {
+//   try {
+//     const { username } = ctx.query;
+//     const { token } = parseCookies(ctx);
+
+//     const res = await axios.get(`${baseUrl}/api/profile/${username}`, {
+//       headers: { Authorization: token },
+//     });
+
+//     const { profile, followersLength, followingLength } = res.data;
+
+//     return { profile, followersLength, followingLength };
+//   } catch (error) {
+//     return { errorLoading: true };
+//   }
+// };
 
 export default ProfilePage;
