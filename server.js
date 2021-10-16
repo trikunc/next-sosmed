@@ -18,6 +18,7 @@ const {
   setMsgToUnread,
   deleteMsg,
 } = require('./utilsServer/messageActions');
+const { likeOrUnlikePost, commentPost } = require('./utilsServer/postActions');
 
 require('dotenv').config();
 connectDb();
@@ -34,6 +35,55 @@ io.on('connection', (socket) => {
         users: users.filter((user) => user.userId !== userId),
       });
     }, 1000);
+  });
+  socket.on('likePost', async ({ postId, userId, like }) => {
+    const { success, name, profilePicUrl, username, postByUserId, error } =
+      await likeOrUnlikePost(postId, userId, like);
+    if (success) {
+      socket.emit('postLiked');
+      if (postByUserId !== userId) {
+        const receiverSocket = findConnectedUser(postByUserId);
+        if (receiverSocket && like) {
+          // WHEN YOU WANT TO SEND DATA TO ONE PARTICULAR CLIENT
+          io.to(receiverSocket.socketId).emit('newNotificationReceived', {
+            name,
+            profilePicUrl,
+            username,
+            postId,
+          });
+        }
+      }
+    }
+  });
+  socket.on('commentPost', async ({ postId, userId, text }) => {
+    console.log('on commentPost');
+    const {
+      success,
+      commentId,
+      name,
+      profilePicUrl,
+      username,
+      postByUserId,
+      error,
+    } = await commentPost(postId, userId, text);
+    if (success) {
+      console.log('success Bro');
+      socket.emit('newCommentPosted', { commentId });
+      if (postByUserId !== userId) {
+        const receiverSocket = findConnectedUser(postByUserId);
+        if (receiverSocket && text) {
+          // WHEN YOU WANT TO SEND DATA TO ONE PARTICULAR CLIENT
+          console.log('Sending data to Socket');
+          io.to(receiverSocket.socketId).emit('newNotifCommentReceived', {
+            name,
+            profilePicUrl,
+            username,
+            postId,
+            text,
+          });
+        }
+      }
+    }
   });
   socket.on('loadMessages', async ({ userId, messagesWith }) => {
     const { chat, error } = await loadMessages(userId, messagesWith);

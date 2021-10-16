@@ -15,6 +15,7 @@ function ImageModal({
   isLiked,
   comments,
   setComments,
+  socket,
 }) {
   return (
     <>
@@ -104,6 +105,7 @@ function ImageModal({
                 postId={post._id}
                 user={user}
                 setComments={setComments}
+                socket={socket}
               />
             </Card.Content>
           </Card>

@@ -17,6 +17,10 @@ import cookie from 'js-cookie';
 import getUserInfo from '../utils/getUserInfo';
 import MessageNotificationModal from '../components/Home/MessageNotificationModal';
 import newMsgSound from '../utils/newMsgSound';
+import {
+  LikeNotification,
+  CommentNotification,
+} from '../components/Home/NotificationPortal';
 
 function Home({ user, postsData, errorLoading }) {
   const [posts, setPosts] = useState(postsData || []);
@@ -28,6 +32,9 @@ function Home({ user, postsData, errorLoading }) {
   const socket = useRef();
   const [newMessageReceived, setNewMessageReceived] = useState(null);
   const [newMessageModal, showNewMessageModal] = useState(false);
+  const [newLikeNotification, setNewLikeNotification] = useState(null);
+  const [newCommentNotification, setNewCommentNotification] = useState(null);
+  const [notificationPopup, showNotificationPopup] = useState(false);
 
   useEffect(() => {
     if (!socket.current) {
@@ -79,8 +86,49 @@ function Home({ user, postsData, errorLoading }) {
 
   if (posts.length === 0 || errorLoading) return <NoPosts />;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on(
+        'newNotificationReceived',
+        ({ name, profilePicUrl, username, postId }) => {
+          setNewLikeNotification({ name, profilePicUrl, username, postId });
+          showNotificationPopup(true);
+        }
+      );
+      socket.current.on(
+        'newNotifCommentReceived',
+        ({ name, profilePicUrl, username, postId, text }) => {
+          setNewCommentNotification({
+            name,
+            profilePicUrl,
+            username,
+            postId,
+            text,
+          });
+          showNotificationPopup(true);
+        }
+      );
+    }
+  }, []);
+
   return (
     <>
+      {notificationPopup && newLikeNotification !== null && (
+        <LikeNotification
+          newNotification={newLikeNotification}
+          notificationPopup={notificationPopup}
+          showNotificationPopup={showNotificationPopup}
+        />
+      )}
+      {notificationPopup && newCommentNotification !== null && (
+        <CommentNotification
+          newNotification={newCommentNotification}
+          notificationPopup={notificationPopup}
+          showNotificationPopup={showNotificationPopup}
+        />
+      )}
+
       {showToastr && <PostDeleteToastr />}
 
       {newMessageModal && newMessageReceived !== null && (
@@ -105,6 +153,7 @@ function Home({ user, postsData, errorLoading }) {
         >
           {posts.map((post) => (
             <CardPost
+              socket={socket}
               key={post._id}
               post={post}
               user={user}
