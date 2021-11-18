@@ -17,8 +17,8 @@ const checkTimeNow = () => {
       host: 'smtp-relay.sendinblue.com',
       port: 587,
       auth: {
-        user: process.env.SMTP_USER2,
-        pass: process.env.SMTP_KEY2,
+        user: process.env.SMTP_USER1,
+        pass: process.env.SMTP_KEY1,
       },
     };
   } else {
@@ -26,8 +26,8 @@ const checkTimeNow = () => {
       host: 'smtp-relay.sendinblue.com',
       port: 587,
       auth: {
-        user: process.env.SMTP_USER1,
-        pass: process.env.SMTP_KEY1,
+        user: process.env.SMTP_USER2,
+        pass: process.env.SMTP_KEY2,
       },
     };
   }
@@ -118,6 +118,31 @@ router.post('/token', async (req, res) => {
     await user.save();
 
     return res.status(200).send('Password updated');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Server Error');
+  }
+});
+
+// SMP Web Contact Us
+router.post('/smp', async (req, res) => {
+  try {
+    const { name, email, text } = req.body;
+
+    const mailOptions = {
+      to: email,
+      from: 'corporates@sinergimp.co.id',
+      subject: 'Hi there! Password reset request',
+      html: `
+      <p>Hey ${name} </p>
+      <p>Email ${email} </p>
+      <p>Text: ${text}</p>
+      `,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => err && console.log(err));
+
+    return res.status(200).send('Email sent successfully');
   } catch (error) {
     console.error(error);
     return res.status(500).send('Server Error');
