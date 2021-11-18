@@ -132,7 +132,7 @@ router.post('/smp', async (req, res) => {
     const mailOptions = {
       to: email,
       from: 'corporates@sinergimp.co.id',
-      subject: 'Hi there! Password reset request',
+      subject: 'Hi thank you for contacting Sinergi Merah Putih',
       html: `
       <p>Hey ${name} </p>
       <p>Email ${email} </p>
