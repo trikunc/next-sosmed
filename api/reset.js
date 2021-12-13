@@ -12,6 +12,9 @@ const crypto = require('crypto');
 const baseUrl = require('../utils/baseUrl');
 const isEmail = require('validator/lib/isEmail');
 
+const images1 = require('../components/Email/images/logoblack.png');
+const images2 = require('../components/Email/images/BusinessPlatform.jpg');
+
 const checkTimeNow = () => {
   const time = moment().format('HH');
   console.log('time-now=', time);
@@ -161,7 +164,7 @@ router.post('/smp', async (req, res) => {
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
                                 <td class="logo">
-                                    <img src="images/logoblack.png" alt="" height="40px" style="float: right;"></img>
+                                    <img src=${images1} alt="" height="40px" style="float: right;"></img>
                                 </td>
                             </tr>
                         </table>
