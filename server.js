@@ -7,6 +7,13 @@ const cors = require('cors');
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const handle = nextApp.getRequestHandler();
+
+const path = require('path');
+const bodyParser = require('body-parser');
+const { upload } = require('./utilsServer/helpers/filehelper');
+const { singleFileUpload, multipleFileUpload,
+  getallSingleFiles, getallMultipleFiles } = require('./api/upload');
+
 const connectDb = require('./utilsServer/connectDb');
 const {
   addUser,
@@ -136,6 +143,11 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => removeUser(socket.id));
 });
 
+// Multer
+app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads/1', express.static(path.join(__dirname, 'uploads/1')));
+
 // Router
 nextApp.prepare().then(() => {
   app.use('/api/signup', require('./api/signup'));
@@ -147,6 +159,11 @@ nextApp.prepare().then(() => {
   app.use('/api/chats', require('./api/chats'));
   app.use('/api/reset', require('./api/reset'));
   app.use('/api/test', require('./api/test'));
+
+  app.use('/api/singleFile', upload.single('file'), singleFileUpload);
+  app.use('/api/multipleFiles', upload.array('files'), multipleFileUpload);
+  app.use('/api/getSingleFiles', getallSingleFiles);
+  app.use('/api/getMultipleFiles', getallMultipleFiles);
 
   app.all('*', (req, res) => handle(req, res));
 
