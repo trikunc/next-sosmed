@@ -146,6 +146,7 @@ nextApp.prepare().then(() => {
   app.use('/api/notifications', require('./api/notifications'));
   app.use('/api/chats', require('./api/chats'));
   app.use('/api/reset', require('./api/reset'));
+  app.use('/api/test', require('./api/test'));
 
   app.all('*', (req, res) => handle(req, res));
 
