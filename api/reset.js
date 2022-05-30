@@ -4,18 +4,10 @@ const UserModel = require('../models/UserModel');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
 const nodemailer = require('nodemailer');
-const fs = require('fs');
-const { promisify } = require('util');
-const readFile = promisify(fs.readFile);
 // const sendGridTransport = require("nodemailer-sendgrid-transport");
 const crypto = require('crypto');
 const baseUrl = require('../utils/baseUrl');
 const isEmail = require('validator/lib/isEmail');
-
-const images1 = require('../components/Email/images/logoblack.png');
-const images2 = require('../components/Email/images/BusinessPlatform.jpg');
-const { View } = require('grandjs');
-const EmailConfirm = View.importJsx('./views/Newsletter.jsx');
 
 const checkTimeNow = () => {
   const time = moment().format('HH');
@@ -34,8 +26,8 @@ const checkTimeNow = () => {
       host: 'smtp-relay.sendinblue.com',
       port: 587,
       auth: {
-        user: process.env.SMTP_USER2,
-        pass: process.env.SMTP_KEY2,
+        user: process.env.SMTP_USER1,
+        pass: process.env.SMTP_KEY1,
       },
     };
   }
@@ -137,22 +129,124 @@ router.post('/smp', async (req, res) => {
   try {
     const { name, email, text } = req.body;
 
-    let template = View.renderToHtml(EmailConfirm, { name });
-
     const mailOptions = {
       to: email,
       from: 'corporates@sinergimp.co.id',
       subject: 'Hi thank you for contacting Sinergi Merah Putih',
-      html: template,
-      // `
-      // <p>Hey ${name} </p>
-      // <p>Email ${email} </p>
-      // <p>Text: ${text}</p>
-      // `,
+      html:
+        //       `
+        //       <html lang="en">
+        // <head>
+        //     <meta charset="UTF-8">
+        //     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        //     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        //     <title>Email</title>
+
+        //     <link href="https://fonts.googleapis.com/css?family=Work+Sans:200,300,400,500,600,700" rel="stylesheet">
+        //     <link rel="stylesheet" href="style.css">
+        //     <script src="https://unpkg.com/feather-icons"></script>
+        // </head>
+
+        // <body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #222222;">
+        //     <div style="width: 100%; background-color: #f1f1f1;">
+        //         <div style="max-width: 600px; margin: 0 auto;" class="email-container">
+
+        //             <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+        //                 <!-- LOGO -->
+        //                 <tr>
+        //                     <td valign="top" class="bg_white" style="padding: 1em 2.5em;">
+        //                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        //                             <tr>
+        //                                 <td class="logo">
+        //                                     <img src="images/logoblack.png" alt="" height="40px" style="float: right;"></img>
+        //                                 </td>
+        //                             </tr>
+        //                         </table>
+        //                     </td>
+        //                 </tr>
+
+        //                 <!-- SINERGIMP -->
+        //                 <tr>
+        //                     <td valign="middle" class="hero bg_white"
+        //                         style="background-image: url(images/BusinessPlatform.jpg); background-size: cover; height: 350px;">
+        //                         <div class="overlay"></div>
+        //                         <table>
+        //                             <tr>
+        //                                 <td>
+        //                                     <div class="text" style="padding: 0 4em; text-align: center;">
+        //                                         <h2>Sinergi Merah Putih</h2>
+        //                                         <p>Enthusiastic, and high curiosity is the key to keep innovating. We will always be a partner to
+        //                                             support you.</p><br>
+        //                                         <p><a href="https://sinergimp1.vercel.app/" class="btn btn-primary">Read more</a></p>
+        //                                     </div>
+        //                                 </td>
+        //                             </tr>
+        //                         </table>
+        //                     </td>
+        //                 </tr>
+
+        //                 <!-- MESSAGE -->
+        //                 <tr>
+        //                     <td valign="top" class="bg_white" style="padding: 3em 2.5em;">
+        //                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        //                             <tr>
+        //                                 <td class="logo">
+        //                                     <h2>Hi, {name}</h2>
+        //                                     <p>We have received your message and would like to thank you for writing to us. If your inquiry is urgent, please use
+        //                                         the telephone number listed below to talk to one of our staff members.</p>
+        //                                     <p>Otherwise, we will reply by email as soon as possible.</p>
+        //                                     <p>In the meantime, make sure to follow us on <a href="https://www.linkedin.com/company/ptsinergimp/mycompany/">LinkedIn!</a> </p><br>
+        //                                     <p>Talk to you soon, Sinergi Merah Putih.</p>
+        //                                 </td>
+        //                             </tr>
+        //                         </table>
+        //                     </td>
+        //                 </tr>
+
+        //                 <!-- CONTACT -->
+        //                 <tr>
+        //                     <td valign="top" class="bg_black" style="padding: 3em 2.5em;">
+        //                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="color: white;">
+        //                             <h4 style="color: white;">Contact Info</h4>
+        //                             <tr>
+        //                                 <td width="7%"><i class="size-small" data-feather="map-pin"></i></td>
+        //                                 <td><h6 style="color: white;">Jl. Gatot Subroto Kav. 32-34, Kelurahan Kuningan Timur, Kecamatan Setia Budi, Jakarta Selatan , 12950 Gedung Patra Jasa
+        //                                 Office Tower, Lantai 17 Ruang 1702-1704</h6></td>
+        //                             </tr>
+        //                             <tr>
+        //                                 <td width="7%"><i class="size-small" data-feather="phone"></i></td>
+        //                                 <td>
+        //                                     <h6 style="color: white;">+62 21 52900252</h6>
+        //                                 </td>
+        //                             </tr>
+        //                         </table>
+        //                     </td>
+        //                 </tr>
+
+        //             </table>
+
+        //             <div class="" style="text-align: center; margin: 10px;">
+        //                 &copy; <span style="font-size: small;"> &nbsp PT. Sinergi Merah Putih 2021</span>
+        //             </div>
+
+        //         </div>
+        //     </div>
+
+        //     <script>
+        //         feather.replace()
+        //     </script>
+        // </body>
+        // </html>
+        //       `,
+        `
+      <p>Hey ${name} </p>
+      <p>Email ${email} </p>
+      <p>Text: ${text}</p>
+      `,
     };
 
     transporter.sendMail(mailOptions, (err, info) => err && console.log(err));
-
+    console.log('Sent mail');
     return res.status(200).send('Email sent successfully');
   } catch (error) {
     console.error(error);

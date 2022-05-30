@@ -32,12 +32,12 @@ const email = ({ name }) => {
                 >
                   <tr>
                     <td className="logo">
-                      <img
-                        src="./images/logoblack.png"
+                      {/* <img
+                        src="../../public/images/logoblack.png"
                         alt=""
                         height="40px"
                         style="float: right;"
-                      ></img>
+                      ></img> */}
                     </td>
                   </tr>
                 </table>
@@ -68,7 +68,7 @@ const email = ({ name }) => {
                         <br />
                         <p>
                           <a
-                            href="https://sinergimp1.vercel.app/"
+                            href="https://sinergimp.vercel.app/"
                             className="btn btn-primary"
                           >
                             Read more
@@ -93,7 +93,7 @@ const email = ({ name }) => {
                 >
                   <tr>
                     <td className="logo">
-                      <h2>Hi, {data.name}</h2>
+                      <h2>Hi, {name}</h2>
                       <p>
                         We have received your message and would like to thank
                         you for writing to us. If your inquiry is urgent, please
