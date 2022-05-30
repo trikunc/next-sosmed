@@ -41,7 +41,7 @@ const multipleFileUpload = async (req, res, next) => {
 
 const getallSingleFiles = async (req, res, next) => {
  try {
-  const files = await SingleFile.find();
+  const files = await SingleFile.find().sort({ "createdAt": -1 });
   res.status(200).send(files);
  } catch (error) {
   res.status(400).send(error.message);
