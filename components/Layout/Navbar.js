@@ -21,7 +21,7 @@ function Navbar() {
         <Link href="/signup" passHref={true}>
           <Menu.Item header active={isActive('/signup')}>
             <Icon size="large" name="signup" />
-            Signup1
+            Signup
           </Menu.Item>
         </Link>
       </Container>

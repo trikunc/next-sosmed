@@ -1,8 +1,10 @@
 import React from 'react';
 import { List, Icon } from 'semantic-ui-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { logoutUser } from '../../utils/authUser';
+import { kemnakerIcon } from '../../public/images/Logo_Kemnaker.png'
 
 function SideMenu({
   user: { unreadNotification, email, unreadMessage, username },
@@ -20,6 +22,14 @@ function SideMenu({
         verticalAlign="middle"
         selection
       >
+        <Image
+          src={'/images/Logo_Kemnaker.png'}
+          width={500}
+          height={500}
+          alt="Picture of the author"
+        />
+        <p style={{ textAlign: 'center', margin: 0 }} >BBPVP BEKASI</p>
+        <p style={{ textAlign: 'center' }} >SOCIAL CLASS</p>
         <Link passHref href="/">
           <List.Item active={isActive('/')}>
             <Icon name="home" size="large" color={isActive('/') && 'teal'} />
