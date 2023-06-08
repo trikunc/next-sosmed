@@ -1,6 +1,6 @@
 const baseUrl =
   process.env.NODE_ENV !== 'production'
     ? 'http://localhost:3000'
-    : 'https://kunc-medsos.herokuapp.com';
+    : 'https://bbpvp-inovasi.netlify.app/';
 
 module.exports = baseUrl;
